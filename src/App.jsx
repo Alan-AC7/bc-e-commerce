@@ -1,7 +1,7 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import { LightningAddress } from '@getalby/lightning-tools';
-import { Modal, launchModal,closeModal} from '@getalby/bitcoin-connect-react';
+import { Modal, launchModal, disconnect} from '@getalby/bitcoin-connect-react';
 import coke from './img/coke.png';
 import cookies from './img/oreo.png';
 import water from './img/water.png';
@@ -27,14 +27,14 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Calculate the total amount in satoshis for the invoice
+   
     const totalSatoshi = Object.entries(cart).reduce((total, [productId, quantity]) => {
       const product = products.find((p) => p.id.toString() === productId);
       return total + product.price * quantity;
     }, 0);
 
     (async () => {
-      // Generate an invoice for the total amount in sats
+     
       const ln = new LightningAddress('yoggyac7@getalby.com');
       await ln.fetch();
       const generatedInvoice = await ln.requestInvoice({ satoshi: totalSatoshi });
@@ -74,10 +74,10 @@ export default function App() {
 
   const handleCheckout = () => {
     if (Object.keys(cart).length === 0) {
-      // Mostrar alerta si el carrito está vacío
-      alert('There is no products in you cart please add  ');
+      
+      alert('Your Cart is empty. Please add some products!');
     } else {
-      // Lanzar modal de checkout si hay productos en el carrito
+      
       new launchModal({ invoice });
     }
   };
@@ -116,13 +116,13 @@ export default function App() {
                                 </div>
 
                                 <div className="mt-4 flex items-end justify-between sm:mt-0 sm:items-start sm:justify-end">
-                                  <p className="shrink-0 w-20 text-base font-semibold text-[rgb(25,108,233)] sm:order-2 sm:ml-8 sm:text-right">{product.price} Sats</p>
+                                  <p className="shrink-0 w-20 text-base font-semibold text-[rgb(25,108,233)] sm:order-2 sm:ml-8 sm:text-right">  x{product.price} Sats</p>
 
                                   <div className="sm:order-1">
                                     <div className="mx-auto flex h-8 items-stretch text-gray-600">
-                                      <button className="flex items-center justify-center rounded-l-md bg-gray-200 text-[rgb(25,108,233)] px-4 transition hover:bg-[rgb(25,108,233)] hover:text-white" onClick={() => removeFromCart(product)}>-</button>
+                                      <button className="flex items-center justify-center rounded-l-md bg-gray-200 text-2xl text-[rgb(25,108,233)] px-4 transition hover:bg-[rgb(25,108,233)] hover:text-white" onClick={() => removeFromCart(product)}>-</button>
                                       <div className="flex w-full items-center justify-center bg-gray-100 px-4 text-md text-[rgb(25,108,233)] uppercase transition">{getProductQuantity(product.id)}</div>
-                                      <button className="flex items-center justify-center rounded-r-md bg-gray-200 px-4 text-[rgb(25,108,233)] transition hover:bg-[rgb(25,108,233)] hover:text-white" onClick={() => addToCart(product)}>+</button>
+                                      <button className="flex items-center justify-center rounded-r-md bg-gray-200 text-2xl px-4 text-md text-[rgb(25,108,233)] transition hover:bg-[rgb(25,108,233)] hover:text-white" onClick={() => addToCart(product)}>+</button>
                                     </div>
                                   </div>
                                 </div>
@@ -149,11 +149,27 @@ export default function App() {
                         type="button"
                         className="group inline-flex w-full items-center justify-center rounded-md bg-[rgb(25,108,233)] px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800"
                       >
-                        Checkout
+                        Pay with Bitcoin Connect!
                         <svg xmlns="http://www.w3.org/2000/svg" className="group-hover:ml-8 ml-4 h-6 w-6 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                       </button>
+                      
+                    </div>
+
+                    <div className="mt-6 text-center">
+                    {connected && (
+          <button
+            onClick={() => {
+              disconnect();
+              setConnected(false);
+            }}
+            className="group inline-flex w-full items-center justify-center rounded-md bg-[rgb(25,108,233)] px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800"
+          >
+            Disconnect
+          </button>
+        )}
+                      
                     </div>
                   </div>
                 </div>
