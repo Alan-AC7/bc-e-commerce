@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import { useState, useEffect } from 'react';
 import { LightningAddress } from '@getalby/lightning-tools';
@@ -27,14 +28,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-   
     const totalSatoshi = Object.entries(cart).reduce((total, [productId, quantity]) => {
       const product = products.find((p) => p.id.toString() === productId);
       return total + product.price * quantity;
     }, 0);
 
     (async () => {
-     
       const ln = new LightningAddress('yoggyac7@getalby.com');
       await ln.fetch();
       const generatedInvoice = await ln.requestInvoice({ satoshi: totalSatoshi });
@@ -74,10 +73,8 @@ export default function App() {
 
   const handleCheckout = () => {
     if (Object.keys(cart).length === 0) {
-      
       alert('Your Cart is empty. Please add some products!');
     } else {
-      
       new launchModal({ invoice });
     }
   };
@@ -91,10 +88,10 @@ export default function App() {
       <br></br>
       <div className="flex flex-wrap justify-center">
         <div className="w-full md:w-1/2 lg:w-2/3 pr-4 mb-8">
-          <section className=" bg-neutral-800 border-4 border-[rgb(25,108,233)] rounded-lg pt-10 pb-10 dark:bg-white">
+          <section className="bg-neutral-800 border-4 border-[rgb(25,108,233)] rounded-lg pt-10 pb-10 dark:bg-white">
             <div className="mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center">
-                <h1 className="text-2xl font-semibold  text-[rgb(25,108,233)]">Your Cart</h1>
+                <h1 className="text-2xl font-semibold text-[rgb(25,108,233)]">Your Cart</h1>
               </div>
 
               <div className="mx-auto mt-8 max-w-2xl md:mt-12">
@@ -128,18 +125,56 @@ export default function App() {
                                 </div>
                               </div>
 
-                              <div className="absolute top-0 right-0 flex sm:bottom-0 sm:top-auto">
-                               
-                              </div>
+                              <div className="absolute top-0 right-0 flex sm:bottom-0 sm:top-auto"></div>
                             </div>
                           </li>
                         ))}
                       </ul>
                     </div>
                     <br></br>
-                    <div className="mt-6 flex items-center justify-between">
+                    <br></br>
+                    <hr className='border-[rgb(25,108,233)]'></hr>
+                    <br></br>
+                    <h1 className="text-2xl font-semibold text-[rgb(25,108,233)]">Order Summary</h1>
+                   
+                    <div className="mt-8">
+                      {Object.entries(cart).map(([productId, quantity]) => {
+                        const product = products.find((p) => p.id.toString() === productId);
+                        const subtotal = product.price * quantity;
+
+                      
+                        if (quantity > 0) {
+                          return (
+                            <div key={productId} className="flex justify-between items-center mb-4">
+                              <div className="flex items-center">
+                                <img className="h-12 w-12 mr-4" src={product.image} alt={product.name} />
+                                <div>
+                                  <p className="text-lg font-semibold text-[rgb(25,108,233)]">{product.name}</p>
+                                  <p className="text-[rgb(25,108,233)]">{quantity} x {product.price} Sats</p>
+                                </div>
+                              </div>
+                              <p className="text-[rgb(25,108,233)] font-bold">{subtotal} Sats</p>
+                            </div>
+                          );
+                        }
+
+                        return null;
+                      })}
+
+                    
+                      {Object.keys(cart).length === 0 && (
+                        <p className="text-[rgb(25,108,233)] mt-4">Your card is Empty. Please add some products</p>
+                      )}
+                    </div>
+                    <br></br>
+
+                    <hr className='border-[rgb(25,108,233)]'></hr>
+                    <br></br>
+                    <div className="flex justify-between items-center mb-4">
                       <p className="text-xl text-[rgb(25,108,233)] font-bold">Total</p>
-                      <p className="text-xl text-[rgb(25,108,233)] font-bold"><span className="text-lg font-normal text-[rgb(25,108,233)]">{calculateTotal()}</span> Sats</p>
+                      <p className="text-xl text-[rgb(25,108,233)] font-bold">
+                        <span className="text-lg font-normal text-[rgb(25,108,233)]">{calculateTotal()}</span> Sats
+                      </p>
                     </div>
 
                     <br></br>
@@ -154,22 +189,20 @@ export default function App() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                       </button>
-                      
                     </div>
 
                     <div className="mt-6 text-center">
-                    {connected && (
-          <button
-            onClick={() => {
-              disconnect();
-              setConnected(false);
-            }}
-            className="group inline-flex w-full items-center justify-center rounded-md bg-[rgb(25,108,233)] px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800"
-          >
-            Disconnect
-          </button>
-        )}
-                      
+                      {connected && (
+                        <button
+                          onClick={() => {
+                            disconnect();
+                            setConnected(false);
+                          }}
+                          className="group inline-flex w-full items-center justify-center rounded-md bg-[rgb(25,108,233)] px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800"
+                        >
+                          Disconnect
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -182,6 +215,3 @@ export default function App() {
     </main>
   );
 }
-
-
-
